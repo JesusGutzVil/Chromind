@@ -316,8 +316,8 @@ img { max-width: 100%; display: block; }
   touch-action: none;
 }
 
-#template-canvas { z-index: 1; }
-#drawing-canvas  { z-index: 2; cursor: crosshair; }
+#template-canvas { z-index: 2; pointer-events: none; mix-blend-mode: multiply; }
+#drawing-canvas  { z-index: 1; cursor: crosshair; }
 
 /* Active color ring indicator floating over canvas */
 .active-color-ring {
@@ -794,6 +794,9 @@ img { max-width: 100%; display: block; }
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+  max-height: 85vh;
+  overflow-y: auto;
+  pointer-events: auto;
 }
 
 .color-sheet.open,
@@ -1322,64 +1325,29 @@ img { max-width: 100%; display: block; }
 
 .eval-close-btn:active { transform: scale(0.88); }
 
-/* Tab Navigation */
-.eval-tabs {
-  display: flex;
-  background: white;
-  border-bottom: 1.5px solid rgba(0,0,0,0.06);
-  flex-shrink: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.eval-tabs::-webkit-scrollbar { display: none; }
-
-.eval-tab {
+/* Single Scrollable Content */
+.eval-content-scrollable {
   flex: 1;
-  padding: var(--space-4) var(--space-3);
-  font-family: var(--font-body);
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  border-bottom: 3px solid transparent;
-  transition: all var(--t-smooth);
-  white-space: nowrap;
-  min-width: 80px;
-}
-
-.eval-tab.active {
-  color: var(--teal-500);
-  border-bottom-color: var(--teal-400);
-}
-
-.eval-tab:active { opacity: 0.7; }
-
-/* Tab Panels */
-.eval-panels {
-  flex: 1;
-  overflow: hidden;
-  position: relative;
-  min-height: 0;
-}
-
-.eval-panel {
-  position: absolute;
-  inset: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: var(--space-5);
-  display: none;
+  display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-6);
   scrollbar-width: thin;
   scrollbar-color: rgba(0,0,0,0.1) transparent;
 }
 
-.eval-panel.active {
+.eval-section {
   display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1.5px dashed rgba(0,0,0,0.08);
 }
-
-/* === Panel 1: Art === */
+.eval-section:last-child {
+  border-bottom: none;
+}
 .artwork-frame-wrapper {
   display: flex;
   flex-direction: column;
@@ -1837,8 +1805,8 @@ img { max-width: 100%; display: block; }
    RESPONSIVE BREAKPOINTS
 ============================================================ */
 
-/* Tablet landscape / Desktop (768px+) */
-@media (min-width: 768px) and (orientation: landscape), (min-width: 1024px) {
+/* Tablet and Desktop (768px+) */
+@media (min-width: 768px) {
   .canvas-workspace {
     flex-direction: row;
     padding-right: var(--sidebar-width);
@@ -1880,7 +1848,7 @@ img { max-width: 100%; display: block; }
     opacity: 1;
   }
 
-  .eval-panels {
+  .eval-content-scrollable {
     min-height: 400px;
   }
 
@@ -1947,15 +1915,15 @@ img { max-width: 100%; display: block; }
 }
 
 /* Scroll within panels */
-.eval-panel::-webkit-scrollbar {
+.eval-content-scrollable::-webkit-scrollbar {
   width: 4px;
 }
 
-.eval-panel::-webkit-scrollbar-track {
+.eval-content-scrollable::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.eval-panel::-webkit-scrollbar-thumb {
+.eval-content-scrollable::-webkit-scrollbar-thumb {
   background: rgba(0,0,0,0.1);
   border-radius: var(--radius-pill);
 }

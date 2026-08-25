@@ -85,8 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('eval-close-btn'),
     document.getElementById('btn-modal-close')
   ];
-  const evalTabs           = document.querySelectorAll('.eval-tab');
-  const evalPanels         = document.querySelectorAll('.eval-panel');
   const evalPreviewImg     = document.getElementById('eval-preview-img');
   const evalArchetypeBadge = document.getElementById('eval-archetype-badge');
   const evalArchetypeEmoji = document.getElementById('eval-archetype-emoji');
@@ -115,7 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const adviceRecBody      = document.getElementById('advice-rec-body');
   const adviceQuestions    = document.getElementById('advice-questions-list');
   const btnDownload        = document.getElementById('btn-modal-download');
-  const btnCertificate     = document.getElementById('btn-modal-certificate');
 
   /* ==========================================================
      CANVAS DIMENSIONS (internal resolution)
@@ -136,10 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let lastX = 0, lastY = 0, lastTime = 0;
 
   // Tool usage tracker (for "favourite tool" stat)
-  const toolUsageCounts = { brush: 0, marker: 0, fill: 0, spray: 0, eraser: 0 };
-
-  // Spray animation frame ID
-  let sprayInterval = null;
+  const toolUsageCounts = { brush: 0, eraser: 0 };
 
   // Undo/Redo
   const MAX_HISTORY = 30;
@@ -263,15 +257,6 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     const coords = getCoords(e);
 
-    if (currentTool === 'fill') {
-      // Flood fill on click/tap — no drag needed
-      toolUsageCounts.fill++;
-      floodFill(Math.round(coords.x), Math.round(coords.y), currentColor);
-      saveHistory();
-      totalStrokes++;
-      return;
-    }
-
     isDrawing = true;
     points    = [coords];
     lastX     = coords.x;
@@ -282,12 +267,8 @@ document.addEventListener('DOMContentLoaded', () => {
     toolUsageCounts[currentTool]++;
     usedSizes.push(currentSize);
 
-    if (currentTool === 'spray') {
-      startSpray(coords);
-    } else {
-      // Draw initial dot
-      applyToolStart(coords);
-    }
+    // Draw initial dot
+    applyToolStart(coords);
   }
 
   /* ==========================================================
@@ -306,11 +287,7 @@ document.addEventListener('DOMContentLoaded', () => {
     currentStrokeLen += dist;
     lastTime = now;
 
-    if (currentTool === 'spray') {
-      drawSprayAt(coords);
-    } else {
-      applyToolMove(coords);
-    }
+    applyToolMove(coords);
 
     lastX = coords.x;
     lastY = coords.y;
@@ -323,9 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!isDrawing) return;
     isDrawing = false;
 
-    if (currentTool === 'spray') {
-      stopSpray();
-    } else if (points.length >= 2 && currentTool !== 'fill') {
+    if (points.length >= 2) {
       // Finish the stroke tail
       const p1 = points[points.length - 2];
       const p2 = points[points.length - 1];
@@ -347,9 +322,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentTool === 'eraser') {
       dCtx.globalCompositeOperation = 'destination-out';
       dCtx.fillStyle = 'rgba(0,0,0,1)';
-    } else if (currentTool === 'marker') {
-      dCtx.globalCompositeOperation = 'source-over';
-      dCtx.fillStyle = hexToRgba(currentColor, 0.55);
     } else {
       dCtx.globalCompositeOperation = 'source-over';
       dCtx.fillStyle = currentColor;
@@ -363,9 +335,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentTool === 'eraser') {
       dCtx.globalCompositeOperation = 'destination-out';
       dCtx.strokeStyle = 'rgba(0,0,0,1)';
-    } else if (currentTool === 'marker') {
-      dCtx.globalCompositeOperation = 'source-over';
-      dCtx.strokeStyle = hexToRgba(currentColor, 0.35);
     } else {
       dCtx.globalCompositeOperation = 'source-over';
       dCtx.strokeStyle = currentColor;
@@ -399,9 +368,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentTool === 'eraser') {
       dCtx.globalCompositeOperation = 'destination-out';
       dCtx.strokeStyle = 'rgba(0,0,0,1)';
-    } else if (currentTool === 'marker') {
-      dCtx.globalCompositeOperation = 'source-over';
-      dCtx.strokeStyle = hexToRgba(currentColor, 0.35);
     } else {
       dCtx.globalCompositeOperation = 'source-over';
       dCtx.strokeStyle = currentColor;
@@ -419,149 +385,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dCtx.lineJoin = 'round';
   }
 
-  /* ==========================================================
-     TOOL — MAGIC SPRAY (particles)
-  ========================================================== */
-  function startSpray(coords) {
-    drawSprayAt(coords);
-  }
 
-  function drawSprayAt(coords) {
-    const density = Math.max(8, Math.floor(currentSize * 1.5));
-    const radius  = currentSize * 2.5;
-    dCtx.globalCompositeOperation = 'source-over';
-    dCtx.fillStyle = currentColor;
-
-    for (let i = 0; i < density; i++) {
-      const angle = Math.random() * Math.PI * 2;
-      const r     = Math.random() * radius;
-      const px    = coords.x + Math.cos(angle) * r;
-      const py    = coords.y + Math.sin(angle) * r;
-      const dotR  = Math.random() * 2.5 + 0.5;
-      dCtx.beginPath();
-      dCtx.arc(px, py, dotR, 0, Math.PI * 2);
-      dCtx.fill();
-    }
-
-    // Occasionally add a tiny star sparkle
-    if (Math.random() < 0.2) {
-      drawSparkle(coords.x + (Math.random() - 0.5) * radius,
-                  coords.y + (Math.random() - 0.5) * radius, currentColor);
-    }
-  }
-
-  function drawSparkle(x, y, color) {
-    dCtx.save();
-    dCtx.globalCompositeOperation = 'source-over';
-    dCtx.translate(x, y);
-    dCtx.fillStyle = color;
-    const size = Math.random() * 6 + 3;
-    for (let i = 0; i < 4; i++) {
-      dCtx.rotate(Math.PI / 4);
-      dCtx.fillRect(-1, -size, 2, size * 2);
-    }
-    dCtx.restore();
-  }
-
-  function stopSpray() {
-    if (sprayInterval) {
-      clearInterval(sprayInterval);
-      sprayInterval = null;
-    }
-  }
-
-  /* ==========================================================
-     TOOL — FLOOD FILL (scanline algorithm, iterative)
-  ========================================================== */
-  function floodFill(startX, startY, fillHex) {
-    // Get the merged image data (template + drawing)
-    const mergeCanvas = document.createElement('canvas');
-    mergeCanvas.width  = CANVAS_W;
-    mergeCanvas.height = CANVAS_H;
-    const mCtx = mergeCanvas.getContext('2d', { willReadFrequently: true });
-
-    // Draw template first
-    if (currentTemplate !== 'none') {
-      mCtx.drawImage(templateCanvas, 0, 0);
-    }
-    mCtx.drawImage(drawingCanvas, 0, 0);
-
-    const imageData = mCtx.getImageData(0, 0, CANVAS_W, CANVAS_H);
-    const data      = imageData.data;
-
-    const idx = (startY * CANVAS_W + startX) * 4;
-    const targetR = data[idx];
-    const targetG = data[idx + 1];
-    const targetB = data[idx + 2];
-    const targetA = data[idx + 3];
-
-    // Parse fill color
-    const fillRGB = hexToRgbObj(fillHex);
-    const fillR = fillRGB.r, fillG = fillRGB.g, fillB = fillRGB.b;
-
-    // Don't fill if we click the same color
-    if (colorMatch(targetR, targetG, targetB, targetA, fillR, fillG, fillB)) return;
-
-    // Tolerance for anti-aliased edges
-    const TOLERANCE = 30;
-
-    function isTargetColor(i) {
-      return (
-        Math.abs(data[i]   - targetR) <= TOLERANCE &&
-        Math.abs(data[i+1] - targetG) <= TOLERANCE &&
-        Math.abs(data[i+2] - targetB) <= TOLERANCE &&
-        Math.abs(data[i+3] - targetA) <= TOLERANCE
-      );
-    }
-
-    function setPixel(i) {
-      data[i]   = fillR;
-      data[i+1] = fillG;
-      data[i+2] = fillB;
-      data[i+3] = 255;
-    }
-
-    // Iterative scanline flood fill
-    const stack = [{ x: startX, y: startY }];
-    const visited = new Uint8Array(CANVAS_W * CANVAS_H);
-
-    while (stack.length > 0) {
-      const { x, y } = stack.pop();
-      if (x < 0 || x >= CANVAS_W || y < 0 || y >= CANVAS_H) continue;
-      const i = (y * CANVAS_W + x) * 4;
-      if (visited[y * CANVAS_W + x]) continue;
-      if (!isTargetColor(i)) continue;
-
-      visited[y * CANVAS_W + x] = 1;
-      setPixel(i);
-
-      stack.push({ x: x + 1, y });
-      stack.push({ x: x - 1, y });
-      stack.push({ x, y: y + 1 });
-      stack.push({ x, y: y - 1 });
-    }
-
-    // Write the filled data onto the DRAWING canvas only
-    const outCtx = drawingCanvas.getContext('2d', { willReadFrequently: true });
-    const outData = outCtx.getImageData(0, 0, CANVAS_W, CANVAS_H);
-    const outPixels = outData.data;
-
-    // Transfer only changed pixels to drawing canvas
-    for (let i = 0; i < visited.length; i++) {
-      if (visited[i]) {
-        const pi = i * 4;
-        outPixels[pi]   = fillR;
-        outPixels[pi+1] = fillG;
-        outPixels[pi+2] = fillB;
-        outPixels[pi+3] = 255;
-      }
-    }
-    outCtx.putImageData(outData, 0, 0);
-  }
-
-  function colorMatch(r1, g1, b1, a1, r2, g2, b2) {
-    return Math.abs(r1 - r2) < 5 && Math.abs(g1 - g2) < 5 && Math.abs(b1 - b2) < 5 && a1 > 200;
-  }
 
   /* ==========================================================
      UNDO / REDO
@@ -903,24 +727,8 @@ document.addEventListener('DOMContentLoaded', () => {
     if (e.target === evalOverlay) closeEvalModal();
   });
 
-  // Eval tabs
-  evalTabs.forEach(tab => {
-    tab.addEventListener('click', () => {
-      evalTabs.forEach(t => {
-        t.classList.remove('active');
-        t.setAttribute('aria-selected', 'false');
-      });
-      evalPanels.forEach(p => p.classList.remove('active'));
-      tab.classList.add('active');
-      tab.setAttribute('aria-selected', 'true');
-      const panelId = tab.getAttribute('aria-controls');
-      document.getElementById(panelId).classList.add('active');
-    });
-  });
-
-  // Download & Certificate
+  // Download
   btnDownload.addEventListener('click', downloadArtwork);
-  btnCertificate.addEventListener('click', downloadCertificate);
 
   /* ==========================================================
      COLOR ANALYSIS
@@ -1552,107 +1360,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const mCtx  = merge.getContext('2d');
     mCtx.fillStyle = '#ffffff';
     mCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    mCtx.drawImage(drawingCanvas, 0, 0);
     if (currentTemplate !== 'none') {
       mCtx.globalCompositeOperation = 'multiply';
       mCtx.drawImage(templateCanvas, 0, 0);
       mCtx.globalCompositeOperation = 'source-over';
     }
-    mCtx.drawImage(drawingCanvas, 0, 0);
     return merge;
   }
 
-  /* ==========================================================
-     DOWNLOAD CERTIFICATE
-  ========================================================== */
-  function downloadCertificate() {
-    const result = evaluateDrawing();
-    const certCanvas = document.createElement('canvas');
-    certCanvas.width  = 1200;
-    certCanvas.height = 900;
-    const cCtx = certCanvas.getContext('2d');
 
-    // Background gradient
-    const bg = cCtx.createLinearGradient(0, 0, 1200, 900);
-    bg.addColorStop(0,   '#FFFDF5');
-    bg.addColorStop(0.5, '#FFF9E8');
-    bg.addColorStop(1,   '#F0FAFF');
-    cCtx.fillStyle = bg;
-    cCtx.fillRect(0, 0, 1200, 900);
-
-    // Decorative border
-    cCtx.strokeStyle = '#3FA7B5';
-    cCtx.lineWidth   = 12;
-    cCtx.strokeRect(24, 24, 1152, 852);
-    cCtx.strokeStyle = 'rgba(63,167,181,0.25)';
-    cCtx.lineWidth   = 6;
-    cCtx.strokeRect(36, 36, 1128, 828);
-
-    // Artwork thumbnail (left side)
-    const artImg = new Image();
-    artImg.src = evalPreviewImg.src;
-    cCtx.save();
-    cCtx.beginPath();
-    roundRect(cCtx, 60, 60, 440, 330, 20);
-    cCtx.clip();
-    cCtx.drawImage(artImg, 60, 60, 440, 330);
-    cCtx.restore();
-
-    // Frame stroke around artwork
-    cCtx.strokeStyle = 'rgba(63,167,181,0.4)';
-    cCtx.lineWidth   = 4;
-    cCtx.beginPath();
-    roundRect(cCtx, 60, 60, 440, 330, 20);
-    cCtx.stroke();
-
-    // Certificate title
-    cCtx.fillStyle = '#3FA7B5';
-    cCtx.font = 'bold 52px Fredoka, sans-serif';
-    cCtx.textAlign = 'left';
-    cCtx.fillText('Certificado de', 540, 120);
-    cCtx.fillStyle = '#2D2D2D';
-    cCtx.font = 'bold 72px Fredoka, sans-serif';
-    cCtx.fillText('Pequeño Artista', 540, 195);
-
-    // Archetype
-    cCtx.font = '44px Fredoka, sans-serif';
-    cCtx.fillStyle = '#FF8A65';
-    cCtx.fillText(`${result.archetypeEmoji} ${result.archetype}`, 540, 270);
-
-    // Mood
-    cCtx.font = 'bold 28px Nunito, sans-serif';
-    cCtx.fillStyle = '#6B6B6B';
-    cCtx.fillText(`Estado de ánimo: ${result.moodEmoji} ${result.mood}`, 540, 340);
-
-    // Radar score summary text
-    const r = result.radarScores;
-    const summaryLines = [
-      `Vitalidad: ${Math.round(r.vitalidad)}% · Calma: ${Math.round(r.calma)}%`,
-      `Expresividad: ${Math.round(r.expresividad)}% · Concentración: ${Math.round(r.concentracion)}%`,
-      `Afecto: ${Math.round(r.afecto)}%`
-    ];
-    cCtx.font = '26px Nunito, sans-serif';
-    cCtx.fillStyle = '#9E9E9E';
-    summaryLines.forEach((line, i) => {
-      cCtx.fillText(line, 540, 410 + i * 38);
-    });
-
-    // Watermark / Branding
-    cCtx.fillStyle = '#3FA7B5';
-    cCtx.font = 'bold 32px Fredoka, sans-serif';
-    cCtx.textAlign = 'center';
-    cCtx.fillText('🎨 Chromind — Dibujo Mágico Infantil', 600, 840);
-
-    // Date
-    cCtx.font = '22px Nunito, sans-serif';
-    cCtx.fillStyle = '#9E9E9E';
-    const dateStr = new Date().toLocaleDateString('es-MX', { year: 'numeric', month: 'long', day: 'numeric' });
-    cCtx.fillText(dateStr, 600, 875);
-
-    const link = document.createElement('a');
-    link.download = `chromind-certificado-${Date.now()}.png`;
-    link.href = certCanvas.toDataURL('image/png');
-    link.click();
-  }
 
   /* ==========================================================
      UTILITIES

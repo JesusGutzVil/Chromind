@@ -97,20 +97,7 @@
                 <span class="tool-pill-label">Pincel</span>
               </button>
 
-              <button class="tool-pill" id="tool-marker" data-tool="marker" title="Marcador">
-                <span class="tool-pill-icon">🖍️</span>
-                <span class="tool-pill-label">Marcador</span>
-              </button>
 
-              <button class="tool-pill" id="tool-fill" data-tool="fill" title="Bote de Pintura">
-                <span class="tool-pill-icon">🪣</span>
-                <span class="tool-pill-label">Relleno</span>
-              </button>
-
-              <button class="tool-pill" id="tool-spray" data-tool="spray" title="Spray Mágico">
-                <span class="tool-pill-icon">✨</span>
-                <span class="tool-pill-label">Spray</span>
-              </button>
 
               <button class="tool-pill" id="tool-eraser" data-tool="eraser" title="Borrador">
                 <span class="tool-pill-icon">🧽</span>
@@ -215,18 +202,7 @@
         <span class="btb-icon">🖌️</span>
         <span class="btb-label">Pincel</span>
       </button>
-      <button class="btb-tool" id="btb-marker" data-tool="marker" aria-label="Marcador" title="Marcador">
-        <span class="btb-icon">🖍️</span>
-        <span class="btb-label">Marcador</span>
-      </button>
-      <button class="btb-tool" id="btb-fill" data-tool="fill" aria-label="Relleno" title="Relleno">
-        <span class="btb-icon">🪣</span>
-        <span class="btb-label">Relleno</span>
-      </button>
-      <button class="btb-tool" id="btb-spray" data-tool="spray" aria-label="Spray" title="Spray">
-        <span class="btb-icon">✨</span>
-        <span class="btb-label">Spray</span>
-      </button>
+
       <button class="btb-tool" id="btb-eraser" data-tool="eraser" aria-label="Borrador" title="Borrador">
         <span class="btb-icon">🧽</span>
         <span class="btb-label">Borrar</span>
@@ -331,8 +307,9 @@
 
       <div class="drawer-upload-section">
         <button class="drawer-upload-btn" id="drawer-upload-btn" aria-label="Subir imagen desde dispositivo">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
-          📥 Subir mi propio dibujo
+          <div style="font-size: 2.5rem; margin-bottom: 5px;">📥</div>
+          <div><strong>Sube tu propio dibujo</strong></div>
+          <div style="font-size: 0.85rem; opacity: 0.8;">Toca para buscar en tu galería</div>
         </button>
         <input type="file" accept="image/*" id="input-upload-image" style="display:none" aria-label="Seleccionar imagen">
       </div>
@@ -400,18 +377,11 @@
           <button class="eval-close-btn" id="eval-close-btn" aria-label="Cerrar informe">✕</button>
         </div>
 
-        <!-- Tab Navigation -->
-        <div class="eval-tabs" id="eval-tabs" role="tablist">
-          <button class="eval-tab active" id="tab-art" role="tab" aria-selected="true" aria-controls="panel-art">🎨 Tu Arte</button>
-          <button class="eval-tab" id="tab-analysis" role="tab" aria-selected="false" aria-controls="panel-analysis">🧠 Análisis</button>
-          <button class="eval-tab" id="tab-advice" role="tab" aria-selected="false" aria-controls="panel-advice">💡 Consejos</button>
-        </div>
+        <!-- Single Scrolling Container -->
+        <div class="eval-content-scrollable">
 
-        <!-- Tab Panels -->
-        <div class="eval-panels">
-
-          <!-- Panel 1: Artwork Preview -->
-          <div class="eval-panel active" id="panel-art" role="tabpanel" aria-labelledby="tab-art">
+          <!-- Section 1: Artwork Preview -->
+          <div class="eval-section" id="panel-art">
             <div class="artwork-frame-wrapper">
               <div class="artwork-frame" id="artwork-frame">
                 <img id="eval-preview-img" src="" alt="Tu obra de arte" class="eval-artwork-img">
@@ -453,8 +423,8 @@
             </div>
           </div>
 
-          <!-- Panel 2: Deep Analysis -->
-          <div class="eval-panel" id="panel-analysis" role="tabpanel" aria-labelledby="tab-analysis">
+          <!-- Section 2: Deep Analysis -->
+          <div class="eval-section" id="panel-analysis">
 
             <!-- Radar Chart SVG -->
             <div class="radar-section">
@@ -524,8 +494,8 @@
 
           </div>
 
-          <!-- Panel 3: Advice for Parents -->
-          <div class="eval-panel" id="panel-advice" role="tabpanel" aria-labelledby="tab-advice">
+          <!-- Section 3: Advice for Parents -->
+          <div class="eval-section" id="panel-advice">
 
             <div class="advice-header-card" id="advice-header-card">
               <div class="advice-hero-emoji" id="advice-hero-emoji">🌟</div>
@@ -566,6 +536,7 @@
             </div>
 
           </div>
+
         </div>
 
         <!-- Modal Footer: Actions -->
@@ -574,10 +545,6 @@
           <button class="eval-btn-primary" id="btn-modal-download">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zm-8 2V5h2v6h1.17L12 13.17 9.83 11H11zm-6 7h14v2H5z"/></svg>
             Descargar Obra
-          </button>
-          <button class="eval-btn-certificate" id="btn-modal-certificate">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>
-            Certificado
           </button>
         </div>
 
