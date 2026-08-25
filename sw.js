@@ -3,7 +3,7 @@
  * Precaches all app assets for 100% offline operation.
  */
 
-const CACHE_NAME = 'chromind-v2.1';
+const CACHE_NAME = 'chromind-v2.3';
 const PRECACHE_URLS = [
   './',
   './index.html',

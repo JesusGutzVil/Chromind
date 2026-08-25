@@ -1,0 +1,20 @@
+# Force HTTPS (Hostinger)
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# Automatic Versioning & Cache Invalidation via Modification Date (ETag)
+FileETag MTime Size
+
+<IfModule mod_headers.c>
+  # Instant revalidation for code files
+  <FilesMatch "\.(html|js|css|json)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+    Header set Pragma "no-cache"
+  </FilesMatch>
+</IfModule>
+
+# Disable Hostinger LiteSpeed cache for instant updates
+<IfModule LiteSpeed>
+  CacheDisable public /
+</IfModule>

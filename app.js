@@ -36,7 +36,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebarBtnClear    = document.getElementById('btn-clear');
   const sidebarBtnDownload = document.getElementById('btn-download-sidebar');
   const sidebarBtnAnalyze  = document.getElementById('btn-analyze-sidebar');
-  const topBtnAnalyze      = document.getElementById('btn-analyze-top');
   const topBtnUndo         = document.getElementById('top-btn-undo');
   const topBtnRedo         = document.getElementById('top-btn-redo');
   const topBtnTemplates    = document.getElementById('top-btn-templates');
@@ -49,14 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const btbSizeBtn     = document.getElementById('btb-size');
   const btbAnalyzeBtn  = document.getElementById('btb-analyze');
 
-  // Active color ring
-  const activeColorRing = document.getElementById('active-color-ring');
-
   // Color Bottom Sheet
   const colorSheetOverlay = document.getElementById('color-sheet-overlay');
   const colorSheet        = document.getElementById('color-sheet');
   const csColors          = document.querySelectorAll('.cs-color');
-  const csSizes           = document.querySelectorAll('.cs-size');
   const colorSheetClose   = document.getElementById('color-sheet-close');
 
   // Size Bottom Sheet
@@ -1112,11 +1107,8 @@ document.addEventListener('DOMContentLoaded', () => {
   function getFavouriteTool() {
     const tools = Object.entries(toolUsageCounts);
     tools.sort((a, b) => b[1] - a[1]);
-    const toolNames = {
-      brush: '🖌️ Pincel', marker: '🖍️ Marcador',
-      fill: '🪣 Relleno', spray: '✨ Spray', eraser: '🧽 Borrador'
-    };
-    return tools[0][1] > 0 ? toolNames[tools[0][0]] : '🖌️ Pincel';
+    const toolNames = { brush: '🖌️ Pincel', eraser: '🧽 Borrador' };
+    return tools[0][1] > 0 ? (toolNames[tools[0][0]] || '🖌️ Pincel') : '🖌️ Pincel';
   }
 
   /* ==========================================================
