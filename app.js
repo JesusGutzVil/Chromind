@@ -261,8 +261,29 @@ document.addEventListener('DOMContentLoaded', () => {
     drawingCanvas.addEventListener('touchcancel', endDraw,   { passive: false });
 
     drawingCanvas.addEventListener('mousedown', startDraw);
-    drawingCanvas.addEventListener('mousemove', moveDraw);
+    drawingCanvas.addEventListener('mousemove', (e) => {
+      moveDraw(e);
+      updateBrushCursor(e);
+    });
     window.addEventListener('mouseup', endDraw);
+    drawingCanvas.addEventListener('mouseleave', () => {
+      drawingCanvas.style.cursor = 'none';
+    });
+    drawingCanvas.addEventListener('mouseenter', updateBrushCursor);
+  }
+
+  function updateBrushCursor(e) {
+    const rect = drawingCanvas.getBoundingClientRect();
+    const scaleX = CANVAS_W / rect.width;
+    const displayRadius = (currentSize / scaleX / 2);
+    const r = Math.max(2, Math.round(displayRadius));
+    const isEraser = currentTool === 'eraser';
+    const color = isEraser ? '#888' : currentColor;
+    const svgSize = r * 2 + 4;
+    const center = r + 2;
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='${svgSize}' height='${svgSize}'><circle cx='${center}' cy='${center}' r='${r}' fill='${isEraser ? "rgba(255,255,255,0.7)" : color.replace('#','%23')}' stroke='${isEraser ? "%23888" : "%23333"}' stroke-width='1.5' opacity='0.85'/></svg>`;
+    const url = `data:image/svg+xml,${svg}`;
+    drawingCanvas.style.cursor = `url("${url}") ${center} ${center}, crosshair`;
   }
 
   /* ==========================================================
@@ -487,8 +508,8 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.toggle('active', btn.dataset.tool === tool);
     });
 
-    // Update canvas cursor
-    drawingCanvas.style.cursor = tool === 'fill' ? 'crosshair' : 'crosshair';
+    // Refresh brush cursor
+    updateBrushCursor();
   }
 
   /* ==========================================================
@@ -510,12 +531,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update bottom toolbar color pill
     btbColorPreview.style.background = color === '#ffffff' ? '#f0f0f0' : color;
 
-    // Update active color ring on canvas
-    activeColorRing.style.background = color === '#ffffff' ? '#f0f0f0' : color;
-
     // If eraser was active, switch to brush when a color is picked
     if (currentTool === 'eraser') {
       selectTool('brush');
+    } else {
+      updateBrushCursor();
     }
   }
 
@@ -537,6 +557,7 @@ document.addEventListener('DOMContentLoaded', () => {
     sizeSliderSheet.value = currentSize;
 
     if (!usedSizes.includes(currentSize)) usedSizes.push(currentSize);
+    updateBrushCursor();
   }
 
   /* ==========================================================
@@ -1143,12 +1164,6 @@ document.addEventListener('DOMContentLoaded', () => {
     advicePsychBody.innerHTML = result.psychText;
     adviceRecBody.innerHTML   = result.recText;
     renderQuestions(result.questions);
-
-    // Reset tabs to first
-    evalTabs.forEach(t => { t.classList.remove('active'); t.setAttribute('aria-selected', 'false'); });
-    evalPanels.forEach(p => p.classList.remove('active'));
-    evalTabs[0].classList.add('active'); evalTabs[0].setAttribute('aria-selected', 'true');
-    document.getElementById('panel-art').classList.add('active');
 
     // Launch confetti
     launchConfetti();

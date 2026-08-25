@@ -153,6 +153,7 @@ img { max-width: 100%; display: block; }
   position: relative;
   overflow: hidden;
   min-height: 0;
+  padding-bottom: var(--bottom-toolbar-height);
 }
 
 /* === TOP BAR === */
@@ -313,7 +314,7 @@ img { max-width: 100%; display: block; }
 }
 
 #template-canvas { z-index: 2; pointer-events: none; mix-blend-mode: multiply; }
-#drawing-canvas  { z-index: 1; cursor: crosshair; }
+#drawing-canvas  { z-index: 1; }
 
 /* Active color ring indicator (hidden by default to keep canvas clean) */
 .active-color-ring {
@@ -1796,6 +1797,7 @@ img { max-width: 100%; display: block; }
   .canvas-workspace {
     flex-direction: row;
     padding-right: 0;
+    padding-bottom: 0;
   }
 
   .sidebar {
@@ -1804,11 +1806,16 @@ img { max-width: 100%; display: block; }
   }
 
   .bottom-toolbar {
+    display: none !important;
+  }
+
+  /* Hide duplicate action buttons from top bar since they are in the sidebar */
+  .top-bar-actions {
     display: none;
   }
 
   .btn-analyze-top {
-    display: flex;
+    display: none;
   }
 
   .canvas-area {
