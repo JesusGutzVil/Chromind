@@ -501,6 +501,48 @@ img { max-width: 100%; display: block; }
   border-color: rgba(231,76,60,0.3);
 }
 
+/* Sidebar Analyze CTA */
+.sidebar-analyze {
+  margin-top: auto;
+  padding-top: var(--space-3);
+}
+
+.btn-analyze-sidebar {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  background: var(--cta-gradient);
+  color: white;
+  font-family: var(--font-fun);
+  font-weight: 700;
+  font-size: 1rem;
+  padding: 12px var(--space-3);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-btn);
+  transition: transform var(--t-fast), box-shadow var(--t-fast);
+  letter-spacing: 0.01em;
+  cursor: pointer;
+}
+
+.btn-analyze-sidebar svg {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  stroke: white;
+}
+
+.btn-analyze-sidebar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(0,0,0,0.15), 0 12px 32px rgba(255,80,80,0.3);
+}
+
+.btn-analyze-sidebar:active {
+  transform: scale(0.96) translateY(2px);
+  box-shadow: var(--shadow-btn-press);
+}
+
 /* ============================================================
    BOTTOM FLOATING TOOLBAR (Mobile) — UNIFIED STYLING
 ============================================================ */
@@ -831,14 +873,11 @@ img { max-width: 100%; display: block; }
   backdrop-filter: blur(6px);
   -webkit-backdrop-filter: blur(6px);
   z-index: var(--z-overlay);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--t-slide);
+  display: none !important;
 }
 
 .drawer-overlay.open {
-  opacity: 1;
-  pointer-events: all;
+  display: block !important;
 }
 
 .templates-drawer {
@@ -989,18 +1028,14 @@ img { max-width: 100%; display: block; }
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: var(--z-modal-overlay);
-  display: flex;
+  display: none !important;
   align-items: center;
   justify-content: center;
   padding: var(--space-5);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--t-slide);
 }
 
 .confirm-overlay.open {
-  opacity: 1;
-  pointer-events: all;
+  display: flex !important;
 }
 
 .confirm-card {
@@ -1086,18 +1121,14 @@ img { max-width: 100%; display: block; }
   backdrop-filter: blur(8px) saturate(1.5);
   -webkit-backdrop-filter: blur(8px) saturate(1.5);
   z-index: var(--z-modal-overlay);
-  display: flex;
+  display: none !important;
   align-items: flex-end;
   justify-content: center;
   padding: 0;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--t-slide);
 }
 
 .eval-overlay.open {
-  opacity: 1;
-  pointer-events: all;
+  display: flex !important;
 }
 
 .eval-modal {

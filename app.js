@@ -641,15 +641,7 @@ document.addEventListener('DOMContentLoaded', () => {
     colorSheet.classList.remove('open');
   }
 
-  function openSizeSheet() {
-    sizeSheetOverlay.classList.add('open');
-    sizeSheet.classList.add('open');
-  }
 
-  function closeSizeSheet() {
-    sizeSheetOverlay.classList.remove('open');
-    sizeSheet.classList.remove('open');
-  }
 
   function openTemplatesDrawer() {
     drawerOverlay.classList.add('open');
@@ -689,17 +681,20 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Sidebar slider
-  sidebarSizeSlider.addEventListener('input', e => selectSize(e.target.value));
+  if (sidebarSizeSlider) {
+    sidebarSizeSlider.addEventListener('input', e => selectSize(e.target.value));
+  }
 
   // Sidebar undo/redo/clear/templates/upload/analyze
-  sidebarBtnUndo.addEventListener('click', undo);
-  sidebarBtnRedo.addEventListener('click', redo);
-  sidebarBtnClear.addEventListener('click', showConfirmClear);
-  sidebarBtnTemplates.addEventListener('click', openTemplatesDrawer);
-  sidebarBtnUpload.addEventListener('click', () => inputUploadImage.click());
+  if (sidebarBtnUndo) sidebarBtnUndo.addEventListener('click', undo);
+  if (sidebarBtnRedo) sidebarBtnRedo.addEventListener('click', redo);
+  if (sidebarBtnClear) sidebarBtnClear.addEventListener('click', showConfirmClear);
+  if (sidebarBtnTemplates) sidebarBtnTemplates.addEventListener('click', openTemplatesDrawer);
+  if (sidebarBtnUpload) sidebarBtnUpload.addEventListener('click', () => inputUploadImage.click());
   if (sidebarBtnDownload) sidebarBtnDownload.addEventListener('click', downloadArtwork);
   if (sidebarBtnAnalyze) sidebarBtnAnalyze.addEventListener('click', openEvalModal);
-  if (topBtnAnalyze) topBtnAnalyze.addEventListener('click', openEvalModal);
+
+  // Top floating action buttons (mobile)
   if (topBtnUndo) topBtnUndo.addEventListener('click', undo);
   if (topBtnRedo) topBtnRedo.addEventListener('click', redo);
   if (topBtnTemplates) topBtnTemplates.addEventListener('click', openTemplatesDrawer);
@@ -732,8 +727,8 @@ document.addEventListener('DOMContentLoaded', () => {
   if (colorSheetOverlay) colorSheetOverlay.addEventListener('click', closeColorSheet);
 
   // Templates drawer
-  drawerClose.addEventListener('click', closeTemplatesDrawer);
-  drawerOverlay.addEventListener('click', closeTemplatesDrawer);
+  if (drawerClose) drawerClose.addEventListener('click', closeTemplatesDrawer);
+  if (drawerOverlay) drawerOverlay.addEventListener('click', closeTemplatesDrawer);
 
   templateCards.forEach(card => {
     card.addEventListener('click', () => {
@@ -744,35 +739,43 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  drawerUploadBtn.addEventListener('click', () => inputUploadImage.click());
-  inputUploadImage.addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (file) {
-      loadUserImage(file);
-      closeTemplatesDrawer();
-    }
-    e.target.value = '';
-  });
+  if (drawerUploadBtn) {
+    drawerUploadBtn.addEventListener('click', () => inputUploadImage.click());
+  }
+  if (inputUploadImage) {
+    inputUploadImage.addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (file) {
+        loadUserImage(file);
+        closeTemplatesDrawer();
+      }
+      e.target.value = '';
+    });
+  }
 
   // Confirm dialog
-  confirmOk.addEventListener('click', () => {
-    hideConfirmClear();
-    resetDrawing();
-    tCtx.clearRect(0, 0, CANVAS_W, CANVAS_H);
-    currentTemplate = 'none';
-    templateCards.forEach(c => c.classList.remove('active'));
-    templateCards[0].classList.add('active');
-  });
-  confirmCancel.addEventListener('click', hideConfirmClear);
+  if (confirmOk) {
+    confirmOk.addEventListener('click', () => {
+      hideConfirmClear();
+      resetDrawing();
+      tCtx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+      currentTemplate = 'none';
+      templateCards.forEach(c => c.classList.remove('active'));
+      if (templateCards[0]) templateCards[0].classList.add('active');
+    });
+  }
+  if (confirmCancel) confirmCancel.addEventListener('click', hideConfirmClear);
 
   // Eval modal close
   evalCloseBtns.forEach(btn => btn && btn.addEventListener('click', closeEvalModal));
-  evalOverlay.addEventListener('click', e => {
-    if (e.target === evalOverlay) closeEvalModal();
-  });
+  if (evalOverlay) {
+    evalOverlay.addEventListener('click', e => {
+      if (e.target === evalOverlay) closeEvalModal();
+    });
+  }
 
   // Download
-  btnDownload.addEventListener('click', downloadArtwork);
+  if (btnDownload) btnDownload.addEventListener('click', downloadArtwork);
 
   /* ==========================================================
      COLOR ANALYSIS
