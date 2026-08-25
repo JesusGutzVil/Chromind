@@ -48,18 +48,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const btbSizeBtn     = document.getElementById('btb-size');
   const btbAnalyzeBtn  = document.getElementById('btb-analyze');
 
-  // Color Bottom Sheet
+  // Color & Size Bottom Sheet
   const colorSheetOverlay = document.getElementById('color-sheet-overlay');
   const colorSheet        = document.getElementById('color-sheet');
   const csColors          = document.querySelectorAll('.cs-color');
+  const csSizes           = document.querySelectorAll('.cs-size');
+  const sizeSliderSheet   = document.getElementById('size-slider-sheet');
   const colorSheetClose   = document.getElementById('color-sheet-close');
-
-  // Size Bottom Sheet
-  const sizeSheetOverlay = document.getElementById('size-sheet-overlay');
-  const sizeSheet        = document.getElementById('size-sheet');
-  const ssBubbles        = document.querySelectorAll('.ss-bubble');
-  const sizeSliderSheet  = document.getElementById('size-slider-sheet');
-  const sizeSheetClose   = document.getElementById('size-sheet-close');
 
   // Templates Drawer
   const drawerOverlay    = document.getElementById('drawer-overlay');
@@ -541,16 +536,13 @@ document.addEventListener('DOMContentLoaded', () => {
   function selectSize(size) {
     currentSize = parseInt(size);
 
-    // Sidebar bubbles
+    // Sidebar bubbles & slider
     sidebarSizeBubbles.forEach(b => b.classList.toggle('active', parseInt(b.dataset.size) === currentSize));
-    sidebarSizeSlider.value = currentSize;
+    if (sidebarSizeSlider) sidebarSizeSlider.value = currentSize;
 
-    // Color sheet sizes
+    // Color & size sheet bubbles & slider
     csSizes.forEach(b => b.classList.toggle('active', parseInt(b.dataset.size) === currentSize));
-
-    // Size sheet bubbles
-    ssBubbles.forEach(b => b.classList.toggle('active', parseInt(b.dataset.size) === currentSize));
-    sizeSliderSheet.value = currentSize;
+    if (sizeSliderSheet) sizeSliderSheet.value = currentSize;
 
     if (!usedSizes.includes(currentSize)) usedSizes.push(currentSize);
     updateBrushCursor();
@@ -719,15 +711,12 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Bottom toolbar — color pill
-  btbColorPill.addEventListener('click', openColorSheet);
-
-  // Bottom toolbar — size
-  btbSizeBtn.addEventListener('click', openSizeSheet);
+  if (btbColorPill) btbColorPill.addEventListener('click', openColorSheet);
 
   // Bottom toolbar — analyze
-  btbAnalyzeBtn.addEventListener('click', openEvalModal);
+  if (btbAnalyzeBtn) btbAnalyzeBtn.addEventListener('click', openEvalModal);
 
-  // Color sheet
+  // Color & Size sheet
   csColors.forEach(btn => {
     btn.addEventListener('click', () => {
       selectColor(btn.dataset.color);
@@ -736,16 +725,11 @@ document.addEventListener('DOMContentLoaded', () => {
   csSizes.forEach(btn => {
     btn.addEventListener('click', () => selectSize(btn.dataset.size));
   });
-  colorSheetClose.addEventListener('click', closeColorSheet);
-  colorSheetOverlay.addEventListener('click', closeColorSheet);
-
-  // Size sheet
-  ssBubbles.forEach(b => {
-    b.addEventListener('click', () => selectSize(b.dataset.size));
-  });
-  sizeSliderSheet.addEventListener('input', e => selectSize(e.target.value));
-  sizeSheetClose.addEventListener('click', closeSizeSheet);
-  sizeSheetOverlay.addEventListener('click', closeSizeSheet);
+  if (sizeSliderSheet) {
+    sizeSliderSheet.addEventListener('input', e => selectSize(e.target.value));
+  }
+  if (colorSheetClose) colorSheetClose.addEventListener('click', closeColorSheet);
+  if (colorSheetOverlay) colorSheetOverlay.addEventListener('click', closeColorSheet);
 
   // Templates drawer
   drawerClose.addEventListener('click', closeTemplatesDrawer);

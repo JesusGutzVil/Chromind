@@ -176,36 +176,31 @@
 
     </main>
 
-    <!-- ================================================
-         FLOATING BOTTOM TOOLBAR (Mobile / Tablet portrait)
+    <!-- ===============================    <!-- ================================================
+         FLOATING BOTTOM TOOLBAR (Mobile)
     ================================================= -->
     <nav class="bottom-toolbar" id="bottom-toolbar" role="toolbar" aria-label="Herramientas de dibujo">
 
-      <!-- Color indicator pill (shows active color, opens color sheet) -->
-      <button class="btb-color-pill" id="btb-color-pill" aria-label="Cambiar color" title="Colores">
+      <!-- Color Button (Opens Color & Size Sheet) -->
+      <button class="btb-tool" id="btb-color-pill" aria-label="Elegir color y grosor" title="Color y Grosor">
         <span class="btb-color-preview" id="btb-color-preview"></span>
-        <svg class="btb-chevron" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+        <span class="btb-label">Color</span>
       </button>
 
-      <!-- Tool Buttons -->
+      <!-- Tool: Brush -->
       <button class="btb-tool active" id="btb-brush" data-tool="brush" aria-label="Pincel" title="Pincel">
         <span class="btb-icon">🖌️</span>
         <span class="btb-label">Pincel</span>
       </button>
 
+      <!-- Tool: Eraser -->
       <button class="btb-tool" id="btb-eraser" data-tool="eraser" aria-label="Borrador" title="Borrador">
         <span class="btb-icon">🧽</span>
         <span class="btb-label">Borrar</span>
       </button>
 
-      <!-- Size Picker -->
-      <button class="btb-size" id="btb-size" aria-label="Tamaño del trazo" title="Grosor">
-        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>
-        <span class="btb-label">Tamaño</span>
-      </button>
-
       <!-- Analyze CTA -->
-      <button class="btb-analyze" id="btb-analyze" aria-label="Analizar dibujo" title="Analizar dibujo">
+      <button class="btb-tool btb-tool-analyze" id="btb-analyze" aria-label="Analizar dibujo" title="Analizar">
         <span class="btb-icon">📊</span>
         <span class="btb-label">Analizar</span>
       </button>
@@ -213,12 +208,12 @@
     </nav>
 
     <!-- ================================================
-         COLOR BOTTOM SHEET (Mobile slide-up)
+         COLOR & SIZE BOTTOM SHEET (Mobile slide-up)
     ================================================= -->
     <div class="color-sheet-overlay" id="color-sheet-overlay"></div>
-    <div class="color-sheet" id="color-sheet" role="dialog" aria-label="Selector de colores" aria-modal="true">
+    <div class="color-sheet" id="color-sheet" role="dialog" aria-label="Selector de color y grosor" aria-modal="true">
       <div class="color-sheet-handle"></div>
-      <div class="color-sheet-title">Elige un Color</div>
+      <div class="color-sheet-title">Color y Grosor</div>
       <div class="color-sheet-palette" id="color-sheet-palette">
         <button class="cs-color active" data-color="#ff3b30" style="background:#ff3b30" aria-label="Rojo"></button>
         <button class="cs-color" data-color="#ff9500" style="background:#ff9500" aria-label="Naranja"></button>
@@ -232,36 +227,28 @@
         <button class="cs-color" data-color="#ffffff" style="background:#fff;border:2px solid #ddd" aria-label="Blanco"></button>
       </div>
 
-      <button class="color-sheet-close" id="color-sheet-close" aria-label="Cerrar">Listo ✓</button>
-    </div>
-
-    <!-- ================================================
-         SIZE BOTTOM SHEET (Mobile slide-up for size button)
-    ================================================= -->
-    <div class="size-sheet-overlay" id="size-sheet-overlay"></div>
-    <div class="size-sheet" id="size-sheet" role="dialog" aria-label="Selector de tamaño" aria-modal="true">
-      <div class="color-sheet-handle"></div>
-      <div class="color-sheet-title">Grosor del Trazo</div>
-      <div class="size-sheet-bubbles" id="size-sheet-bubbles">
-        <button class="ss-bubble" data-size="6" aria-label="Fino">
-          <span class="ss-dot" style="width:8px;height:8px;"></span>
+      <div class="color-sheet-section-label">Grosor del Trazo</div>
+      <div class="color-sheet-sizes" id="color-sheet-sizes">
+        <button class="cs-size" data-size="6" aria-label="Fino">
+          <span class="cs-size-dot" style="width:6px;height:6px;"></span>
           <span>Fino</span>
         </button>
-        <button class="ss-bubble active" data-size="16" aria-label="Mediano">
-          <span class="ss-dot" style="width:18px;height:18px;"></span>
+        <button class="cs-size active" data-size="16" aria-label="Mediano">
+          <span class="cs-size-dot" style="width:14px;height:14px;"></span>
           <span>Medio</span>
         </button>
-        <button class="ss-bubble" data-size="32" aria-label="Grueso">
-          <span class="ss-dot" style="width:30px;height:30px;"></span>
+        <button class="cs-size" data-size="32" aria-label="Grueso">
+          <span class="cs-size-dot" style="width:22px;height:22px;"></span>
           <span>Grueso</span>
         </button>
-        <button class="ss-bubble" data-size="56" aria-label="Gigante">
-          <span class="ss-dot" style="width:44px;height:44px;"></span>
+        <button class="cs-size" data-size="56" aria-label="Gigante">
+          <span class="cs-size-dot" style="width:32px;height:32px;"></span>
           <span>Gigante</span>
         </button>
       </div>
-      <input type="range" class="size-slider" id="size-slider-sheet" min="2" max="80" value="16" aria-label="Tamaño preciso">
-      <button class="color-sheet-close" id="size-sheet-close" aria-label="Cerrar">Listo ✓</button>
+      <input type="range" class="size-slider" id="size-slider-sheet" min="2" max="80" value="16" aria-label="Grosor exacto">
+
+      <button class="color-sheet-close" id="color-sheet-close" aria-label="Cerrar">Listo ✓</button>
     </div>
 
     <!-- ================================================
