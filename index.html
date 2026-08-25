@@ -33,40 +33,40 @@
   ====================================================== -->
   <div class="app-root" id="app-root">
 
+    <!-- Top Bar (logo + title + analyze btn on desktop) -->
+    <header class="top-bar" id="top-bar">
+      <div class="top-bar-left">
+        <img src="images/apple-touch-icon.png" alt="Chromind Logo" class="top-logo" id="top-logo">
+        <span class="top-title">Chromind</span>
+      </div>
+      <div class="top-bar-actions" id="top-bar-actions">
+        <button class="top-action-btn" id="top-btn-undo" title="Deshacer" disabled aria-label="Deshacer">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+        </button>
+        <button class="top-action-btn" id="top-btn-redo" title="Rehacer" disabled aria-label="Rehacer">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+        </button>
+        <button class="top-action-btn" id="top-btn-templates" title="Plantillas y fotos" aria-label="Elegir plantilla">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/></svg>
+        </button>
+        <button class="top-action-btn danger" id="top-btn-clear" title="Limpiar lienzo" aria-label="Limpiar lienzo">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+        </button>
+      </div>
+      <div class="top-bar-right">
+        <button class="btn-analyze-top" id="btn-analyze-top" title="Ver mi análisis">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+          </svg>
+          <span>¡Ver mi Magia!</span>
+        </button>
+      </div>
+    </header>
+
     <!-- ================================================
          CANVAS WORKSPACE (fills the screen)
     ================================================= -->
     <main class="canvas-workspace" id="canvas-workspace">
-
-      <!-- Top Bar (logo + title + analyze btn on desktop) -->
-      <header class="top-bar" id="top-bar">
-        <div class="top-bar-left">
-          <img src="images/apple-touch-icon.png" alt="Chromind Logo" class="top-logo" id="top-logo">
-          <span class="top-title">Chromind</span>
-        </div>
-        <div class="top-bar-actions" id="top-bar-actions">
-          <button class="top-action-btn" id="top-btn-undo" title="Deshacer" disabled aria-label="Deshacer">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
-          </button>
-          <button class="top-action-btn" id="top-btn-redo" title="Rehacer" disabled aria-label="Rehacer">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
-          </button>
-          <button class="top-action-btn" id="top-btn-templates" title="Plantillas y fotos" aria-label="Elegir plantilla">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/></svg>
-          </button>
-          <button class="top-action-btn danger" id="top-btn-clear" title="Limpiar lienzo" aria-label="Limpiar lienzo">
-            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
-          </button>
-        </div>
-        <div class="top-bar-right">
-          <button class="btn-analyze-top" id="btn-analyze-top" title="Ver mi análisis">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
-            </svg>
-            <span>¡Ver mi Magia!</span>
-          </button>
-        </div>
-      </header>
 
       <!-- Canvas container -->
       <div class="canvas-area" id="canvas-area">
@@ -163,6 +163,10 @@
               <button class="action-btn" id="btn-upload" title="Subir imagen" aria-label="Subir imagen propia">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
                 <span>Subir foto</span>
+              </button>
+              <button class="action-btn" id="btn-download-sidebar" title="Descargar dibujo" aria-label="Guardar dibujo">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zm-8 2V5h2v6h1.17L12 13.17 9.83 11H11zm-6 7h14v2H5z"/></svg>
+                <span>Guardar</span>
               </button>
               <button class="action-btn danger" id="btn-clear" title="Limpiar todo" aria-label="Limpiar lienzo">
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>

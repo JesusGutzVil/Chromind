@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const sidebarBtnTemplates= document.getElementById('btn-templates');
   const sidebarBtnUpload   = document.getElementById('btn-upload');
   const sidebarBtnClear    = document.getElementById('btn-clear');
+  const sidebarBtnDownload = document.getElementById('btn-download-sidebar');
   const sidebarBtnAnalyze  = document.getElementById('btn-analyze-sidebar');
   const topBtnAnalyze      = document.getElementById('btn-analyze-top');
   const topBtnUndo         = document.getElementById('top-btn-undo');
@@ -709,6 +710,7 @@ document.addEventListener('DOMContentLoaded', () => {
   sidebarBtnClear.addEventListener('click', showConfirmClear);
   sidebarBtnTemplates.addEventListener('click', openTemplatesDrawer);
   sidebarBtnUpload.addEventListener('click', () => inputUploadImage.click());
+  if (sidebarBtnDownload) sidebarBtnDownload.addEventListener('click', downloadArtwork);
   sidebarBtnAnalyze.addEventListener('click', openEvalModal);
   topBtnAnalyze.addEventListener('click', openEvalModal);
   if (topBtnUndo) topBtnUndo.addEventListener('click', undo);
@@ -1121,19 +1123,8 @@ document.addEventListener('DOMContentLoaded', () => {
      EVAL MODAL — OPEN
   ========================================================== */
   function openEvalModal() {
-    // Merge canvases for preview
-    const merge = document.createElement('canvas');
-    merge.width  = CANVAS_W;
-    merge.height = CANVAS_H;
-    const mCtx = merge.getContext('2d');
-    mCtx.fillStyle = '#ffffff';
-    mCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-    if (currentTemplate !== 'none') {
-      mCtx.globalCompositeOperation = 'multiply';
-      mCtx.drawImage(templateCanvas, 0, 0);
-      mCtx.globalCompositeOperation = 'source-over';
-    }
-    mCtx.drawImage(drawingCanvas, 0, 0);
+    // Merge canvases for preview (drawing first, template on top with multiply)
+    const merge = buildMergedCanvas();
     evalPreviewImg.src = merge.toDataURL('image/png');
 
     // Run evaluation

@@ -773,20 +773,23 @@ img { max-width: 100%; display: block; }
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   padding: var(--space-4) var(--space-5) calc(var(--space-6) + env(safe-area-inset-bottom, 0)) var(--space-5);
   z-index: var(--z-sheet);
-  transform: translateY(100%);
-  transition: transform var(--t-slide);
+  transform: translateY(105%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--t-slide), opacity var(--t-slide);
   box-shadow: 0 -8px 40px rgba(0,0,0,0.15);
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   max-height: 85vh;
   overflow-y: auto;
-  pointer-events: auto;
 }
 
 .color-sheet.open,
 .size-sheet.open {
   transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .color-sheet-handle {
@@ -968,8 +971,10 @@ img { max-width: 100%; display: block; }
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   padding: var(--space-5) var(--space-5) calc(var(--space-8) + env(safe-area-inset-bottom, 0)) var(--space-5);
   z-index: var(--z-drawer);
-  transform: translateY(100%);
-  transition: transform var(--t-slide);
+  transform: translateY(105%);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform var(--t-slide), opacity var(--t-slide);
   box-shadow: 0 -8px 40px rgba(0,0,0,0.25);
   display: flex;
   flex-direction: column;
@@ -979,6 +984,8 @@ img { max-width: 100%; display: block; }
 
 .templates-drawer.open {
   transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .drawer-header {
@@ -1853,26 +1860,30 @@ img { max-width: 100%; display: block; }
     max-width: 640px;
     left: 50%;
     right: auto;
-    transform: translateX(-50%) translateY(100%);
-    border-radius: var(--radius-xl);
-    bottom: var(--space-6);
+    bottom: 0;
+    transform: translateX(-50%) translateY(105%);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   }
 
   .templates-drawer.open {
     transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
   }
 
   .color-sheet, .size-sheet {
     max-width: 480px;
     left: 50%;
     right: auto;
-    transform: translateX(-50%) translateY(100%);
-    bottom: var(--space-6);
-    border-radius: var(--radius-xl);
+    bottom: 0;
+    transform: translateX(-50%) translateY(105%);
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   }
 
   .color-sheet.open, .size-sheet.open {
     transform: translateX(-50%) translateY(0);
+    opacity: 1;
+    pointer-events: auto;
   }
 }
 
