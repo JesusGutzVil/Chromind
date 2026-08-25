@@ -117,13 +117,14 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================
      CANVAS DIMENSIONS (internal resolution)
   ========================================================== */
-  const CANVAS_W = 1200;
-  const CANVAS_H = 900;
+  let CANVAS_W = 1200;
+  let CANVAS_H = 900;
+  let activeTemplateImage = null;
 
   /* ==========================================================
      STATE
   ========================================================== */
-  let currentTool    = 'brush'; // brush | marker | fill | spray | eraser
+  let currentTool    = 'brush'; // brush | eraser
   let currentColor   = '#ff3b30';
   let currentSize    = 16;
   let currentTemplate = 'none';
@@ -189,27 +190,62 @@ document.addEventListener('DOMContentLoaded', () => {
   window.addEventListener('resize', resizeCanvas);
 
   /* ==========================================================
-     CANVAS RESIZE (responsive fitting)
+     CANVAS RESIZE (responsive full-area fitting)
   ========================================================== */
   function resizeCanvas() {
     const areaRect = canvasArea.getBoundingClientRect();
-    const padding  = 24;
-    const maxW = areaRect.width  - padding * 2;
-    const maxH = areaRect.height - padding * 2;
+    if (!areaRect.width || !areaRect.height) return;
 
-    const scaleW = maxW / CANVAS_W;
-    const scaleH = maxH / CANVAS_H;
-    const scale  = Math.min(scaleW, scaleH, 1);
+    const isMobile = window.innerWidth < 768;
+    const padding = isMobile ? 8 : 16;
+    const maxW = Math.max(200, Math.floor(areaRect.width - padding * 2));
+    const maxH = Math.max(200, Math.floor(areaRect.height - padding * 2));
 
-    const frameW = Math.round(CANVAS_W * scale);
-    const frameH = Math.round(CANVAS_H * scale);
+    const aspect = maxW / maxH;
+    let newW, newH;
+    if (aspect >= 1) {
+      newW = Math.round(900 * aspect);
+      newH = 900;
+    } else {
+      newW = 900;
+      newH = Math.round(900 / aspect);
+    }
 
-    canvasFrame.style.width  = frameW + 'px';
-    canvasFrame.style.height = frameH + 'px';
-    drawingCanvas.style.width  = frameW + 'px';
-    drawingCanvas.style.height = frameH + 'px';
-    templateCanvas.style.width = frameW + 'px';
-    templateCanvas.style.height= frameH + 'px';
+    const needsRescale = (drawingCanvas.width !== newW || drawingCanvas.height !== newH);
+
+    if (needsRescale) {
+      let tempCanvas = null;
+      if (drawingCanvas.width > 0 && drawingCanvas.height > 0 && totalStrokes > 0) {
+        tempCanvas = document.createElement('canvas');
+        tempCanvas.width = drawingCanvas.width;
+        tempCanvas.height = drawingCanvas.height;
+        tempCanvas.getContext('2d').drawImage(drawingCanvas, 0, 0);
+      }
+
+      CANVAS_W = newW;
+      CANVAS_H = newH;
+
+      drawingCanvas.width = CANVAS_W;
+      drawingCanvas.height = CANVAS_H;
+      templateCanvas.width = CANVAS_W;
+      templateCanvas.height = CANVAS_H;
+
+      dCtx.lineCap = 'round';
+      dCtx.lineJoin = 'round';
+
+      if (tempCanvas) {
+        dCtx.drawImage(tempCanvas, 0, 0, CANVAS_W, CANVAS_H);
+      }
+
+      drawTemplateToCanvas();
+    }
+
+    canvasFrame.style.width  = maxW + 'px';
+    canvasFrame.style.height = maxH + 'px';
+    drawingCanvas.style.width  = maxW + 'px';
+    drawingCanvas.style.height = maxH + 'px';
+    templateCanvas.style.width = maxW + 'px';
+    templateCanvas.style.height= maxH + 'px';
   }
 
   /* ==========================================================
@@ -536,25 +572,25 @@ document.addEventListener('DOMContentLoaded', () => {
      TEMPLATE LOADING
   ========================================================== */
   function loadTemplate(template) {
-    tCtx.clearRect(0, 0, CANVAS_W, CANVAS_H);
     currentTemplate = template;
     resetDrawing();
 
-    if (template === 'none') return;
+    if (template === 'none') {
+      activeTemplateImage = null;
+      tCtx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+      return;
+    }
 
     const img = new Image();
     img.src = `images/${template}.png`;
     img.onload = () => {
-      const scale = Math.min(CANVAS_W / img.width, CANVAS_H / img.height);
-      const w = img.width  * scale;
-      const h = img.height * scale;
-      const x = (CANVAS_W - w) / 2;
-      const y = (CANVAS_H - h) / 2;
-      tCtx.fillStyle = '#ffffff';
-      tCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-      tCtx.drawImage(img, x, y, w, h);
+      activeTemplateImage = img;
+      drawTemplateToCanvas();
     };
-    img.onerror = () => console.warn('Template image not found:', template);
+    img.onerror = () => {
+      activeTemplateImage = null;
+      console.warn('Template image not found:', template);
+    };
   }
 
   function loadUserImage(file) {
@@ -562,19 +598,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const img = new Image();
     img.src = url;
     img.onload = () => {
-      tCtx.clearRect(0, 0, CANVAS_W, CANVAS_H);
       currentTemplate = 'user-image';
+      activeTemplateImage = img;
       resetDrawing();
-      const scale = Math.min(CANVAS_W / img.width, CANVAS_H / img.height);
-      const w = img.width  * scale;
-      const h = img.height * scale;
-      const x = (CANVAS_W - w) / 2;
-      const y = (CANVAS_H - h) / 2;
-      tCtx.fillStyle = '#ffffff';
-      tCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
-      tCtx.drawImage(img, x, y, w, h);
+      drawTemplateToCanvas();
       URL.revokeObjectURL(url);
     };
+  }
+
+  function drawTemplateToCanvas() {
+    tCtx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+    if (!activeTemplateImage || currentTemplate === 'none') return;
+    const scale = Math.min(CANVAS_W / activeTemplateImage.width, CANVAS_H / activeTemplateImage.height) * 0.95;
+    const w = activeTemplateImage.width * scale;
+    const h = activeTemplateImage.height * scale;
+    const x = (CANVAS_W - w) / 2;
+    const y = (CANVAS_H - h) / 2;
+    tCtx.fillStyle = '#ffffff';
+    tCtx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+    tCtx.drawImage(activeTemplateImage, x, y, w, h);
   }
 
   /* ==========================================================
