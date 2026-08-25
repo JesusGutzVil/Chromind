@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Chromind – Dibujo Mágico Infantil</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Chromind: la app de dibujo mágica para niños que analiza sus colores y trazos para descubrir su estado emocional. Perfecta para padres y educadores.">
+  <meta name="theme-color" content="#FFFDF5">
+
+  <!-- PWA / iOS -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Chromind">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/apple-touch-icon.png">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Fonts: Fredoka (fun headings) + Nunito (readable body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- =====================================================
+       APP ROOT
+  ====================================================== -->
+  <div class="app-root" id="app-root">
+
+    <!-- ================================================
+         CANVAS WORKSPACE (fills the screen)
+    ================================================= -->
+    <main class="canvas-workspace" id="canvas-workspace">
+
+      <!-- Top Bar (logo + title + analyze btn on desktop) -->
+      <header class="top-bar" id="top-bar">
+        <div class="top-bar-left">
+          <img src="images/apple-touch-icon.png" alt="Chromind Logo" class="top-logo" id="top-logo">
+          <span class="top-title">Chromind</span>
+        </div>
+        <div class="top-bar-actions" id="top-bar-actions">
+          <button class="top-action-btn" id="top-btn-undo" title="Deshacer" disabled aria-label="Deshacer">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+          </button>
+          <button class="top-action-btn" id="top-btn-redo" title="Rehacer" disabled aria-label="Rehacer">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+          </button>
+          <button class="top-action-btn" id="top-btn-templates" title="Plantillas y fotos" aria-label="Elegir plantilla">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/></svg>
+          </button>
+          <button class="top-action-btn danger" id="top-btn-clear" title="Limpiar lienzo" aria-label="Limpiar lienzo">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+          </button>
+        </div>
+        <div class="top-bar-right">
+          <button class="btn-analyze-top" id="btn-analyze-top" title="Ver mi análisis">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+            </svg>
+            <span>¡Ver mi Magia!</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Canvas container -->
+      <div class="canvas-area" id="canvas-area">
+        <div class="canvas-frame" id="canvas-frame">
+          <!-- Template canvas (background coloring image) -->
+          <canvas id="template-canvas" width="1200" height="900"></canvas>
+          <!-- Drawing canvas (user strokes) -->
+          <canvas id="drawing-canvas" width="1200" height="900"></canvas>
+
+          <!-- Active Color Indicator (floats over canvas on mobile) -->
+          <div class="active-color-ring" id="active-color-ring"></div>
+        </div>
+      </div>
+
+      <!-- ============================================
+           SIDEBAR (Desktop / Tablet landscape)
+      ============================================= -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-inner">
+
+          <!-- Herramientas de Dibujo -->
+          <div class="tool-section">
+            <div class="tool-section-label">Herramientas</div>
+            <div class="tools-grid">
+
+              <button class="tool-pill active" id="tool-brush" data-tool="brush" title="Pincel">
+                <span class="tool-pill-icon">🖌️</span>
+                <span class="tool-pill-label">Pincel</span>
+              </button>
+
+              <button class="tool-pill" id="tool-marker" data-tool="marker" title="Marcador">
+                <span class="tool-pill-icon">🖍️</span>
+                <span class="tool-pill-label">Marcador</span>
+              </button>
+
+              <button class="tool-pill" id="tool-fill" data-tool="fill" title="Bote de Pintura">
+                <span class="tool-pill-icon">🪣</span>
+                <span class="tool-pill-label">Relleno</span>
+              </button>
+
+              <button class="tool-pill" id="tool-spray" data-tool="spray" title="Spray Mágico">
+                <span class="tool-pill-icon">✨</span>
+                <span class="tool-pill-label">Spray</span>
+              </button>
+
+              <button class="tool-pill" id="tool-eraser" data-tool="eraser" title="Borrador">
+                <span class="tool-pill-icon">🧽</span>
+                <span class="tool-pill-label">Borrador</span>
+              </button>
+
+            </div>
+          </div>
+
+          <!-- Paleta de Colores -->
+          <div class="tool-section">
+            <div class="tool-section-label">Colores</div>
+            <div class="color-palette" id="color-palette">
+              <button class="color-btn active" data-color="#ff3b30" style="background:#ff3b30" title="Rojo" aria-label="Rojo"></button>
+              <button class="color-btn" data-color="#ff9500" style="background:#ff9500" title="Naranja" aria-label="Naranja"></button>
+              <button class="color-btn" data-color="#ffcc00" style="background:#ffcc00" title="Amarillo" aria-label="Amarillo"></button>
+              <button class="color-btn" data-color="#34c759" style="background:#34c759" title="Verde" aria-label="Verde"></button>
+              <button class="color-btn" data-color="#007aff" style="background:#007aff" title="Azul" aria-label="Azul"></button>
+              <button class="color-btn" data-color="#af52de" style="background:#af52de" title="Morado" aria-label="Morado"></button>
+              <button class="color-btn" data-color="#ff2d55" style="background:#ff2d55" title="Rosa" aria-label="Rosa"></button>
+              <button class="color-btn" data-color="#a25e38" style="background:#a25e38" title="Marrón" aria-label="Marrón"></button>
+              <button class="color-btn" data-color="#1c1c1e" style="background:#1c1c1e" title="Negro" aria-label="Negro"></button>
+              <button class="color-btn" data-color="#ffffff" style="background:#ffffff;border:2px solid #ddd" title="Blanco" aria-label="Blanco"></button>
+            </div>
+          </div>
+
+          <!-- Grosor del Trazo -->
+          <div class="tool-section">
+            <div class="tool-section-label">Grosor</div>
+            <div class="size-bubbles" id="size-bubbles">
+              <button class="size-bubble" data-size="6" title="Fino" aria-label="Trazo fino">
+                <span class="size-dot" style="width:6px;height:6px;"></span>
+              </button>
+              <button class="size-bubble active" data-size="16" title="Mediano" aria-label="Trazo mediano">
+                <span class="size-dot" style="width:14px;height:14px;"></span>
+              </button>
+              <button class="size-bubble" data-size="32" title="Grueso" aria-label="Trazo grueso">
+                <span class="size-dot" style="width:24px;height:24px;"></span>
+              </button>
+              <button class="size-bubble" data-size="56" title="Gigante" aria-label="Trazo gigante">
+                <span class="size-dot" style="width:36px;height:36px;"></span>
+              </button>
+            </div>
+            <input type="range" class="size-slider" id="size-slider" min="2" max="80" value="16" aria-label="Tamaño del pincel">
+          </div>
+
+          <!-- Acciones de Edición -->
+          <div class="tool-section">
+            <div class="tool-section-label">Edición</div>
+            <div class="action-btns">
+              <button class="action-btn" id="btn-undo" title="Deshacer" disabled aria-label="Deshacer">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
+                <span>Deshacer</span>
+              </button>
+              <button class="action-btn" id="btn-redo" title="Rehacer" disabled aria-label="Rehacer">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.4 10.6C16.55 8.99 14.15 8 11.5 8c-4.65 0-8.58 3.03-9.96 7.22L3.9 16c1.05-3.19 4.05-5.5 7.6-5.5 1.95 0 3.73.72 5.12 1.88L13 16h9V7l-3.6 3.6z"/></svg>
+                <span>Rehacer</span>
+              </button>
+              <button class="action-btn" id="btn-templates" title="Plantillas" aria-label="Elegir plantilla">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/></svg>
+                <span>Plantillas</span>
+              </button>
+              <button class="action-btn" id="btn-upload" title="Subir imagen" aria-label="Subir imagen propia">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+                <span>Subir foto</span>
+              </button>
+              <button class="action-btn danger" id="btn-clear" title="Limpiar todo" aria-label="Limpiar lienzo">
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
+                <span>Limpiar</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Analizar Dibujo (desktop CTA) -->
+          <div class="tool-section sidebar-analyze">
+            <button class="btn-analyze-sidebar" id="btn-analyze-sidebar" title="Analizar dibujo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
+              </svg>
+              ✨ ¡Ver mi Magia!
+            </button>
+          </div>
+
+        </div>
+      </aside>
+
+    </main>
+
+    <!-- ================================================
+         FLOATING BOTTOM TOOLBAR (Mobile / Tablet portrait)
+    ================================================= -->
+    <nav class="bottom-toolbar" id="bottom-toolbar" role="toolbar" aria-label="Herramientas de dibujo">
+
+      <!-- Color indicator pill (shows active color, opens color sheet) -->
+      <button class="btb-color-pill" id="btb-color-pill" aria-label="Cambiar color" title="Colores">
+        <span class="btb-color-preview" id="btb-color-preview"></span>
+        <svg class="btb-chevron" viewBox="0 0 24 24" fill="currentColor"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+      </button>
+
+      <!-- Tool Buttons -->
+      <button class="btb-tool active" id="btb-brush" data-tool="brush" aria-label="Pincel" title="Pincel">
+        <span class="btb-icon">🖌️</span>
+        <span class="btb-label">Pincel</span>
+      </button>
+      <button class="btb-tool" id="btb-marker" data-tool="marker" aria-label="Marcador" title="Marcador">
+        <span class="btb-icon">🖍️</span>
+        <span class="btb-label">Marcador</span>
+      </button>
+      <button class="btb-tool" id="btb-fill" data-tool="fill" aria-label="Relleno" title="Relleno">
+        <span class="btb-icon">🪣</span>
+        <span class="btb-label">Relleno</span>
+      </button>
+      <button class="btb-tool" id="btb-spray" data-tool="spray" aria-label="Spray" title="Spray">
+        <span class="btb-icon">✨</span>
+        <span class="btb-label">Spray</span>
+      </button>
+      <button class="btb-tool" id="btb-eraser" data-tool="eraser" aria-label="Borrador" title="Borrador">
+        <span class="btb-icon">🧽</span>
+        <span class="btb-label">Borrar</span>
+      </button>
+
+      <!-- Size Picker -->
+      <button class="btb-size" id="btb-size" aria-label="Tamaño del trazo" title="Grosor">
+        <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="7"/></svg>
+        <span class="btb-label">Tamaño</span>
+      </button>
+
+      <!-- Analyze CTA -->
+      <button class="btb-analyze" id="btb-analyze" aria-label="Ver mi análisis" title="¡Ver mi Magia!">
+        <span class="btb-icon">🎨</span>
+        <span class="btb-label">¡Magia!</span>
+      </button>
+
+    </nav>
+
+    <!-- ================================================
+         COLOR BOTTOM SHEET (Mobile slide-up)
+    ================================================= -->
+    <div class="color-sheet-overlay" id="color-sheet-overlay"></div>
+    <div class="color-sheet" id="color-sheet" role="dialog" aria-label="Selector de colores" aria-modal="true">
+      <div class="color-sheet-handle"></div>
+      <div class="color-sheet-title">Elige un Color</div>
+      <div class="color-sheet-palette" id="color-sheet-palette">
+        <button class="cs-color active" data-color="#ff3b30" style="background:#ff3b30" aria-label="Rojo"></button>
+        <button class="cs-color" data-color="#ff9500" style="background:#ff9500" aria-label="Naranja"></button>
+        <button class="cs-color" data-color="#ffcc00" style="background:#ffcc00" aria-label="Amarillo"></button>
+        <button class="cs-color" data-color="#34c759" style="background:#34c759" aria-label="Verde"></button>
+        <button class="cs-color" data-color="#007aff" style="background:#007aff" aria-label="Azul"></button>
+        <button class="cs-color" data-color="#af52de" style="background:#af52de" aria-label="Morado"></button>
+        <button class="cs-color" data-color="#ff2d55" style="background:#ff2d55" aria-label="Rosa"></button>
+        <button class="cs-color" data-color="#a25e38" style="background:#a25e38" aria-label="Marrón"></button>
+        <button class="cs-color" data-color="#1c1c1e" style="background:#1c1c1e" aria-label="Negro"></button>
+        <button class="cs-color" data-color="#ffffff" style="background:#fff;border:2px solid #ddd" aria-label="Blanco"></button>
+      </div>
+
+      <div class="color-sheet-section-label">Grosor del Trazo</div>
+      <div class="color-sheet-sizes" id="color-sheet-sizes">
+        <button class="cs-size" data-size="6" aria-label="Fino">
+          <span class="cs-size-dot" style="width:8px;height:8px;"></span>
+          <span>Fino</span>
+        </button>
+        <button class="cs-size active" data-size="16" aria-label="Mediano">
+          <span class="cs-size-dot" style="width:16px;height:16px;"></span>
+          <span>Medio</span>
+        </button>
+        <button class="cs-size" data-size="32" aria-label="Grueso">
+          <span class="cs-size-dot" style="width:26px;height:26px;"></span>
+          <span>Grueso</span>
+        </button>
+        <button class="cs-size" data-size="56" aria-label="Gigante">
+          <span class="cs-size-dot" style="width:38px;height:38px;"></span>
+          <span>Gigante</span>
+        </button>
+      </div>
+
+      <button class="color-sheet-close" id="color-sheet-close" aria-label="Cerrar">Listo ✓</button>
+    </div>
+
+    <!-- ================================================
+         SIZE BOTTOM SHEET (Mobile slide-up for size button)
+    ================================================= -->
+    <div class="size-sheet-overlay" id="size-sheet-overlay"></div>
+    <div class="size-sheet" id="size-sheet" role="dialog" aria-label="Selector de tamaño" aria-modal="true">
+      <div class="color-sheet-handle"></div>
+      <div class="color-sheet-title">Grosor del Trazo</div>
+      <div class="size-sheet-bubbles" id="size-sheet-bubbles">
+        <button class="ss-bubble" data-size="6" aria-label="Fino">
+          <span class="ss-dot" style="width:8px;height:8px;"></span>
+          <span>Fino</span>
+        </button>
+        <button class="ss-bubble active" data-size="16" aria-label="Mediano">
+          <span class="ss-dot" style="width:18px;height:18px;"></span>
+          <span>Medio</span>
+        </button>
+        <button class="ss-bubble" data-size="32" aria-label="Grueso">
+          <span class="ss-dot" style="width:30px;height:30px;"></span>
+          <span>Grueso</span>
+        </button>
+        <button class="ss-bubble" data-size="56" aria-label="Gigante">
+          <span class="ss-dot" style="width:44px;height:44px;"></span>
+          <span>Gigante</span>
+        </button>
+      </div>
+      <input type="range" class="size-slider" id="size-slider-sheet" min="2" max="80" value="16" aria-label="Tamaño preciso">
+      <button class="color-sheet-close" id="size-sheet-close" aria-label="Cerrar">Listo ✓</button>
+    </div>
+
+    <!-- ================================================
+         TEMPLATES DRAWER
+    ================================================= -->
+    <div class="drawer-overlay" id="drawer-overlay"></div>
+    <div class="templates-drawer" id="templates-drawer" role="dialog" aria-label="Galería de plantillas" aria-modal="true">
+      <div class="drawer-header">
+        <h2 class="drawer-title">🖼️ Elige tu Dibujo</h2>
+        <button class="drawer-close" id="drawer-close" aria-label="Cerrar galería">✕</button>
+      </div>
+      <p class="drawer-subtitle">Selecciona una plantilla para colorear, o sube tu propio dibujo.</p>
+
+      <div class="drawer-upload-section">
+        <button class="drawer-upload-btn" id="drawer-upload-btn" aria-label="Subir imagen desde dispositivo">
+          <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+          📥 Subir mi propio dibujo
+        </button>
+        <input type="file" accept="image/*" id="input-upload-image" style="display:none" aria-label="Seleccionar imagen">
+      </div>
+
+      <div class="templates-grid" id="templates-grid">
+        <!-- Blank -->
+        <div class="template-card active" data-template="none" role="button" tabindex="0" aria-label="Lienzo en blanco">
+          <div class="template-thumb blank-thumb">
+            <svg viewBox="0 0 80 80" fill="none" stroke="#ccc" stroke-width="2">
+              <rect x="8" y="8" width="64" height="64" rx="6"/>
+              <line x1="30" y1="40" x2="50" y2="40" stroke-dasharray="4 3"/>
+              <line x1="40" y1="30" x2="40" y2="50" stroke-dasharray="4 3"/>
+            </svg>
+          </div>
+          <div class="template-card-label">Lienzo Libre</div>
+        </div>
+
+        <!-- Maceta -->
+        <div class="template-card" data-template="maceta" role="button" tabindex="0" aria-label="Maceta con Flores">
+          <div class="template-thumb">
+            <img src="images/maceta.png" alt="Maceta con Flores" loading="lazy">
+          </div>
+          <div class="template-card-label">Maceta con Flores 🌸</div>
+        </div>
+
+        <!-- Mandala -->
+        <div class="template-card" data-template="mandala1" role="button" tabindex="0" aria-label="Mandala Floral">
+          <div class="template-thumb">
+            <img src="images/mandala1.png" alt="Mandala Floral" loading="lazy">
+          </div>
+          <div class="template-card-label">Mandala Floral 🌀</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         CONFIRM CLEAR DIALOG
+    ================================================= -->
+    <div class="confirm-overlay" id="confirm-overlay" role="dialog" aria-modal="true" aria-label="Confirmar borrar">
+      <div class="confirm-card">
+        <div class="confirm-emoji">🎨</div>
+        <h3 class="confirm-title">¿Empezar de nuevo?</h3>
+        <p class="confirm-body">Tu dibujo actual se borrará para siempre. ¿Estás seguro?</p>
+        <div class="confirm-btns">
+          <button class="confirm-btn-cancel" id="confirm-cancel">No, seguir pintando</button>
+          <button class="confirm-btn-ok" id="confirm-ok">Sí, empezar de nuevo</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================
+         EVALUATION MODAL (Results / Analysis)
+    ================================================= -->
+    <div class="eval-overlay" id="eval-overlay" role="dialog" aria-modal="true" aria-label="Informe de tu dibujo">
+      <div class="eval-modal" id="eval-modal">
+
+        <!-- Modal Header with confetti stripe and archetype -->
+        <div class="eval-header" id="eval-header">
+          <div class="eval-header-confetti" id="eval-confetti" aria-hidden="true"></div>
+          <div class="eval-archetype-badge" id="eval-archetype-badge">
+            <span class="eval-archetype-emoji" id="eval-archetype-emoji">🌟</span>
+            <span class="eval-archetype-name" id="eval-archetype-name">Explorador Radiante</span>
+          </div>
+          <h2 class="eval-title" id="eval-title">¡Tu dibujo es increíble!</h2>
+          <button class="eval-close-btn" id="eval-close-btn" aria-label="Cerrar informe">✕</button>
+        </div>
+
+        <!-- Tab Navigation -->
+        <div class="eval-tabs" id="eval-tabs" role="tablist">
+          <button class="eval-tab active" id="tab-art" role="tab" aria-selected="true" aria-controls="panel-art">🎨 Tu Arte</button>
+          <button class="eval-tab" id="tab-analysis" role="tab" aria-selected="false" aria-controls="panel-analysis">🧠 Análisis</button>
+          <button class="eval-tab" id="tab-advice" role="tab" aria-selected="false" aria-controls="panel-advice">💡 Consejos</button>
+        </div>
+
+        <!-- Tab Panels -->
+        <div class="eval-panels">
+
+          <!-- Panel 1: Artwork Preview -->
+          <div class="eval-panel active" id="panel-art" role="tabpanel" aria-labelledby="tab-art">
+            <div class="artwork-frame-wrapper">
+              <div class="artwork-frame" id="artwork-frame">
+                <img id="eval-preview-img" src="" alt="Tu obra de arte" class="eval-artwork-img">
+              </div>
+              <div class="artwork-caption">Tu obra de arte ✨</div>
+            </div>
+
+            <!-- Mood + Color Strip -->
+            <div class="mood-strip" id="mood-strip">
+              <div class="mood-icon-container" id="mood-icon-container">😊</div>
+              <div class="mood-text-block">
+                <div class="mood-label">Estado de ánimo</div>
+                <div class="mood-value" id="mood-value">Calma y Armonía</div>
+              </div>
+            </div>
+
+            <!-- Color distribution bar -->
+            <div class="color-dist-section">
+              <div class="color-dist-label">Colores que usaste</div>
+              <div class="color-dist-bar" id="color-dist-bar"></div>
+              <div class="color-dist-legend" id="color-dist-legend"></div>
+            </div>
+
+            <!-- Spatial heatmap mini -->
+            <div class="spatial-section">
+              <div class="spatial-label">¿Dónde dibujaste más?</div>
+              <div class="spatial-grid-container">
+                <div class="spatial-grid" id="spatial-grid">
+                  <!-- 9 cells filled by JS -->
+                </div>
+                <div class="spatial-legend-labels">
+                  <span class="spatial-zone-tag" id="sz-top">Arriba: imaginación</span>
+                  <span class="spatial-zone-tag" id="sz-left">Izquierda: pasado</span>
+                  <span class="spatial-zone-tag" id="sz-center">Centro: yo interior</span>
+                  <span class="spatial-zone-tag" id="sz-right">Derecha: futuro</span>
+                  <span class="spatial-zone-tag" id="sz-bottom">Abajo: estabilidad</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Panel 2: Deep Analysis -->
+          <div class="eval-panel" id="panel-analysis" role="tabpanel" aria-labelledby="tab-analysis">
+
+            <!-- Radar Chart SVG -->
+            <div class="radar-section">
+              <div class="radar-title">Mapa de Emociones</div>
+              <div class="radar-container" id="radar-container">
+                <svg class="radar-svg" id="radar-svg" viewBox="0 0 260 260" aria-label="Gráfica de rasgos emocionales"></svg>
+              </div>
+              <div class="radar-legend" id="radar-legend"></div>
+            </div>
+
+            <!-- Stroke Dynamics Cards -->
+            <div class="dynamics-section">
+              <div class="dynamics-title">Dinámica del Trazo</div>
+              <div class="dynamics-cards" id="dynamics-cards">
+                <div class="dyn-card">
+                  <div class="dyn-card-icon">✏️</div>
+                  <div class="dyn-card-body">
+                    <div class="dyn-card-label">Trazos realizados</div>
+                    <div class="dyn-card-value" id="stat-strokes">—</div>
+                  </div>
+                </div>
+                <div class="dyn-card">
+                  <div class="dyn-card-icon">⚡</div>
+                  <div class="dyn-card-body">
+                    <div class="dyn-card-label">Ritmo de dibujo</div>
+                    <div class="dyn-card-value" id="stat-speed">—</div>
+                  </div>
+                </div>
+                <div class="dyn-card">
+                  <div class="dyn-card-icon">📏</div>
+                  <div class="dyn-card-body">
+                    <div class="dyn-card-label">Grosor promedio</div>
+                    <div class="dyn-card-value" id="stat-thickness">—</div>
+                  </div>
+                </div>
+                <div class="dyn-card">
+                  <div class="dyn-card-icon">🧽</div>
+                  <div class="dyn-card-body">
+                    <div class="dyn-card-label">Uso del borrador</div>
+                    <div class="dyn-card-value" id="stat-eraser">—</div>
+                  </div>
+                </div>
+                <div class="dyn-card">
+                  <div class="dyn-card-icon">🗺️</div>
+                  <div class="dyn-card-body">
+                    <div class="dyn-card-label">Área del lienzo usada</div>
+                    <div class="dyn-card-value" id="stat-coverage">—</div>
+                  </div>
+                </div>
+                <div class="dyn-card">
+                  <div class="dyn-card-icon">🎨</div>
+                  <div class="dyn-card-body">
+                    <div class="dyn-card-label">Herramienta favorita</div>
+                    <div class="dyn-card-value" id="stat-tool">—</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Psych Analysis Text -->
+            <div class="psych-text-section">
+              <div class="psych-text-title">Lo que expresa este dibujo</div>
+              <div class="psych-text-body" id="psych-text-body">
+                El análisis aparecerá aquí después de dibujar.
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Panel 3: Advice for Parents -->
+          <div class="eval-panel" id="panel-advice" role="tabpanel" aria-labelledby="tab-advice">
+
+            <div class="advice-header-card" id="advice-header-card">
+              <div class="advice-hero-emoji" id="advice-hero-emoji">🌟</div>
+              <div class="advice-archetype-full" id="advice-archetype-full">Explorador Radiante</div>
+              <div class="advice-archetype-desc" id="advice-archetype-desc">
+                Un perfil único detectado por los trazos y colores de este dibujo.
+              </div>
+            </div>
+
+            <div class="advice-card">
+              <div class="advice-card-icon">💬</div>
+              <div class="advice-card-content">
+                <div class="advice-card-title">Qué dice la psicología</div>
+                <div class="advice-card-body" id="advice-psych-body">
+                  Análisis psicoeducativo personalizado aparecerá aquí.
+                </div>
+              </div>
+            </div>
+
+            <div class="advice-card">
+              <div class="advice-card-icon">👨‍👩‍👧</div>
+              <div class="advice-card-content">
+                <div class="advice-card-title">Recomendaciones para ti</div>
+                <div class="advice-card-body" id="advice-rec-body">
+                  Consejos prácticos para mamá, papá y educadores.
+                </div>
+              </div>
+            </div>
+
+            <div class="advice-card">
+              <div class="advice-card-icon">🗣️</div>
+              <div class="advice-card-content">
+                <div class="advice-card-title">Preguntas mágicas para conversar</div>
+                <div class="advice-questions-list" id="advice-questions-list">
+                  <!-- Dynamic questions -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Modal Footer: Actions -->
+        <div class="eval-footer">
+          <button class="eval-btn-secondary" id="btn-modal-close">Cerrar</button>
+          <button class="eval-btn-primary" id="btn-modal-download">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zm-8 2V5h2v6h1.17L12 13.17 9.83 11H11zm-6 7h14v2H5z"/></svg>
+            Descargar Obra
+          </button>
+          <button class="eval-btn-certificate" id="btn-modal-certificate">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 10h2v7H7zm4-3h2v10h-2zm4 6h2v4h-2z"/></svg>
+            Certificado
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /.app-root -->
+
+  <script src="app.js"></script>
+</body>
+</html>

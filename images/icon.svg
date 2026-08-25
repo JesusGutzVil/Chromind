@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <!-- Background Gradient -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e1e38" />
+      <stop offset="100%" stop-color="#0f0f1a" />
+    </linearGradient>
+    
+    <!-- Paint Splash Gradients -->
+    <linearGradient id="splashGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ff3b30" />
+      <stop offset="100%" stop-color="#ff9500" />
+    </linearGradient>
+    <linearGradient id="splashGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#007aff" />
+      <stop offset="100%" stop-color="#af52de" />
+    </linearGradient>
+    <linearGradient id="brushMetal" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8e8e93" />
+      <stop offset="50%" stop-color="#e5e5ea" />
+      <stop offset="100%" stop-color="#8e8e93" />
+    </linearGradient>
+    <linearGradient id="brushWood" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#a25e38" />
+      <stop offset="100%" stop-color="#6e3e1a" />
+    </linearGradient>
+    
+    <!-- Drop Shadow Filter -->
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.5" />
+    </filter>
+  </defs>
+
+  <!-- Rounded App Icon Background -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)" />
+
+  <!-- Decorative Outer Ring -->
+  <rect x="12" y="12" width="488" height="488" rx="100" fill="none" stroke="rgba(255, 255, 255, 0.08)" stroke-width="4" />
+
+  <!-- Paint Splashes (Back Layer) -->
+  <g filter="url(#shadow)">
+    <!-- Splash Left (Cool colors) -->
+    <path d="M 160 220 C 120 180, 80 240, 110 300 C 140 360, 220 380, 240 320 C 260 260, 200 260, 160 220 Z" fill="url(#splashGrad2)" opacity="0.9" />
+    
+    <!-- Splash Right (Warm colors) -->
+    <path d="M 320 160 C 280 120, 360 80, 400 130 C 440 180, 420 260, 360 280 C 300 300, 360 200, 320 160 Z" fill="url(#splashGrad1)" opacity="0.9" />
+    
+    <!-- Central Bright Yellow Splash -->
+    <circle cx="280" cy="240" r="70" fill="#ffcc00" opacity="0.85" />
+  </g>
+
+  <!-- Paintbrush (Front Layer) -->
+  <g filter="url(#shadow)" transform="rotate(-35 256 256)">
+    <!-- Brush Handle (Wood) -->
+    <path d="M 236 400 L 276 400 L 266 220 L 246 220 Z" fill="url(#brushWood)" rx="6" />
+    <!-- Rounded bottom of handle -->
+    <path d="M 236 400 C 236 410, 276 410, 276 400 Z" fill="#6e3e1a" />
+    
+    <!-- Metal Ferrule -->
+    <rect x="242" y="180" width="28" height="40" fill="url(#brushMetal)" rx="2" />
+    <line x1="242" y1="193" x2="270" y2="193" stroke="#8e8e93" stroke-width="2" />
+    <line x1="242" y1="207" x2="270" y2="207" stroke="#8e8e93" stroke-width="2" />
+
+    <!-- Brush Bristles (Dark Blue/Indigo tipped with Bright Pink) -->
+    <path d="M 242 180 C 242 130, 256 100, 256 100 C 256 100, 270 130, 270 180 Z" fill="#343a40" />
+    <!-- Colorful paint tip on bristles -->
+    <path d="M 248 140 C 251 125, 256 100, 256 100 C 256 100, 261 125, 264 140 C 258 148, 252 148, 248 140 Z" fill="#ff2d55" />
+  </g>
+
+  <!-- Mini Paint Droplet -->
+  <circle cx="160" cy="380" r="14" fill="#34c759" filter="url(#shadow)" />
+  <circle cx="340" cy="350" r="18" fill="#ff9500" filter="url(#shadow)" />
+</svg>

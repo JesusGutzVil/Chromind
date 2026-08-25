@@ -1,0 +1,38 @@
+{
+  "short_name": "Chromind",
+  "name": "Chromind – Dibujo Mágico Infantil",
+  "description": "La app de dibujo mágica para niños que analiza colores y trazos para revelar el estado emocional. Perfecta para padres y educadores.",
+  "icons": [
+    {
+      "src": "images/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "images/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "images/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ],
+  "start_url": "./index.html",
+  "background_color": "#FFFDF5",
+  "theme_color": "#FFFDF5",
+  "display": "standalone",
+  "orientation": "any",
+  "categories": ["education", "kids", "entertainment"],
+  "lang": "es"
+}
