@@ -33,13 +33,13 @@
   ====================================================== -->
   <div class="app-root" id="app-root">
 
-    <!-- Top Bar (logo + title + analyze btn on desktop) -->
-    <header class="top-bar" id="top-bar">
-      <div class="top-bar-left">
-        <img src="images/apple-touch-icon.png" alt="Chromind Logo" class="top-logo" id="top-logo">
-        <span class="top-title">Chromind</span>
-      </div>
-      <div class="top-bar-actions" id="top-bar-actions">
+    <!-- ================================================
+         CANVAS WORKSPACE (fills 100% of the screen)
+    ================================================= -->
+    <main class="canvas-workspace" id="canvas-workspace">
+
+      <!-- Floating Action Pills (Mobile: Undo, Redo, Templates, Clear) -->
+      <div class="floating-top-actions" id="floating-top-actions">
         <button class="top-action-btn" id="top-btn-undo" title="Deshacer" disabled aria-label="Deshacer">
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.5 8c-2.65 0-5.05.99-6.9 2.6L2 7v9h9l-3.62-3.62c1.39-1.16 3.16-1.88 5.12-1.88 3.54 0 6.55 2.31 7.6 5.5l2.37-.78C21.08 11.03 17.15 8 12.5 8z"/></svg>
         </button>
@@ -53,20 +53,6 @@
           <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>
         </button>
       </div>
-      <div class="top-bar-right">
-        <button class="btn-analyze-top" id="btn-analyze-top" title="Ver mi análisis">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
-          </svg>
-          <span>¡Ver mi Magia!</span>
-        </button>
-      </div>
-    </header>
-
-    <!-- ================================================
-         CANVAS WORKSPACE (fills the screen)
-    ================================================= -->
-    <main class="canvas-workspace" id="canvas-workspace">
 
       <!-- Canvas container -->
       <div class="canvas-area" id="canvas-area">
@@ -181,7 +167,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6z"/>
               </svg>
-              ✨ ¡Ver mi Magia!
+              <span>Analizar Dibujo</span>
             </button>
           </div>
 
@@ -219,9 +205,9 @@
       </button>
 
       <!-- Analyze CTA -->
-      <button class="btb-analyze" id="btb-analyze" aria-label="Ver mi análisis" title="¡Ver mi Magia!">
-        <span class="btb-icon">🎨</span>
-        <span class="btb-label">¡Magia!</span>
+      <button class="btb-analyze" id="btb-analyze" aria-label="Analizar dibujo" title="Analizar dibujo">
+        <span class="btb-icon">📊</span>
+        <span class="btb-label">Analizar</span>
       </button>
 
     </nav>

@@ -711,8 +711,8 @@ document.addEventListener('DOMContentLoaded', () => {
   sidebarBtnTemplates.addEventListener('click', openTemplatesDrawer);
   sidebarBtnUpload.addEventListener('click', () => inputUploadImage.click());
   if (sidebarBtnDownload) sidebarBtnDownload.addEventListener('click', downloadArtwork);
-  sidebarBtnAnalyze.addEventListener('click', openEvalModal);
-  topBtnAnalyze.addEventListener('click', openEvalModal);
+  if (sidebarBtnAnalyze) sidebarBtnAnalyze.addEventListener('click', openEvalModal);
+  if (topBtnAnalyze) topBtnAnalyze.addEventListener('click', openEvalModal);
   if (topBtnUndo) topBtnUndo.addEventListener('click', undo);
   if (topBtnRedo) topBtnRedo.addEventListener('click', redo);
   if (topBtnTemplates) topBtnTemplates.addEventListener('click', openTemplatesDrawer);
@@ -1133,7 +1133,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Populate header
     evalArchetypeEmoji.textContent = result.archetypeEmoji;
     evalArchetypeName.textContent  = result.archetype;
-    evalTitle.textContent = `¡Tu dibujo habla por ti! ${result.archetypeEmoji}`;
+    evalTitle.textContent = `Análisis de tu Dibujo ${result.archetypeEmoji}`;
 
     // Mood strip
     moodIconContainer.textContent = result.moodEmoji;
@@ -1460,14 +1460,16 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   /* ==========================================================
-     SERVICE WORKER REGISTRATION
+     SERVICE WORKER REGISTRATION (Offline PWA)
   ========================================================== */
   if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('[Chromind] Service Worker ✓', reg.scope))
-        .catch(err => console.warn('[Chromind] SW failed:', err));
-    });
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => {
+        console.log('[Chromind] PWA Service Worker registrado correctamente:', reg.scope);
+      })
+      .catch(err => {
+        console.warn('[Chromind] Error al registrar Service Worker:', err);
+      });
   }
 
 }); // DOMContentLoaded
