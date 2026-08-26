@@ -130,16 +130,6 @@ Las plantillas disponibles (lienzo libre, maceta, mandala) se eligen desde un dr
 
 ---
 
-## Instalación y uso local
-
-Requiere un servidor web local porque el Service Worker no funciona directamente desde `file://`.
-
-1. Copiar la carpeta en el directorio raíz de WAMP (`www/Psicolor/`).
-2. Iniciar WAMP y acceder a `http://localhost/Psicolor/`.
-3. En producción, se recomienda servir desde HTTPS para que la app sea instalable en dispositivos móviles.
-
----
-
 ## Limitaciones y notas importantes
 
 - El análisis es orientativo. No es un diagnóstico clínico ni reemplaza la evaluación de un profesional de la salud mental.
